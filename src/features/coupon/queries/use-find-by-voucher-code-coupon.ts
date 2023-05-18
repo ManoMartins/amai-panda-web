@@ -23,7 +23,7 @@ export async function findByVoucherCodeCoupon(
     const { voucherCode } = input
 
     const response = await api.get<ApiResponse<OutputFindByVoucherCodeCoupon>>(
-        `/coupons/${voucherCode}`
+        `/coupons/voucher-code/${voucherCode}`
     )
 
     return response.data.data

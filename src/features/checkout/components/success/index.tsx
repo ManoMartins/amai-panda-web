@@ -1,10 +1,11 @@
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback } from 'react'
 import { Button } from '@/components/button'
 
 import * as S from './styles'
-import { useRouter } from 'next/navigation'
-import { useCallback } from 'react'
 
 export default function Success() {
+    const params = useSearchParams()
     const router = useRouter()
 
     const handleSubmit = useCallback(() => {
@@ -17,7 +18,14 @@ export default function Success() {
 
             <S.Subtitle>Sua compra foi realizada com sucesso.</S.Subtitle>
 
-            <Button title={'Continuar comprando'} onClick={handleSubmit} />
+            {params.get('couponMoneyExchange') && (
+                <S.Subtitle>
+                    Verifique a listagem de coupons para utilizar o seu novo
+                    cupom.
+                </S.Subtitle>
+            )}
+
+            <Button title="Continuar comprando" onClick={handleSubmit} />
         </S.Container>
     )
 }

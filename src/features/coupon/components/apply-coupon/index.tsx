@@ -34,8 +34,8 @@ export function ApplyCoupon() {
         resolver: zodResolver(schema),
     })
 
-    const coupon = useCoupons()
-    const { addVoucherCode } = useCheckoutActions()
+    const coupons = useCoupons()
+    const { addCoupon, removeCoupon } = useCheckoutActions()
 
     const onSubmit = useCallback(
         async (input: InputForm) => {
@@ -46,13 +46,20 @@ export function ApplyCoupon() {
                 )
 
                 const couponModel = new CouponModel()
+                Object.assign(couponModel, data)
 
-                addVoucherCode(Object.assign(couponModel, data))
-            } catch (e) {
-                console.log(e)
+                if (couponModel.status === 'USED') {
+                    throw new Error(
+                        'Cupom já utilizado, tente utilizar outro código de voucher'
+                    )
+                }
+
+                addCoupon(couponModel)
+            } catch (e: any) {
+                alert(e.message)
             }
         },
-        [addVoucherCode]
+        [addCoupon]
     )
 
     return (
@@ -63,25 +70,38 @@ export function ApplyCoupon() {
             </S.SubTitle>
 
             <Text
-                placeholder={'Inserir código do cupom'}
+                placeholder="Inserir código do cupom"
                 error={errors.voucherCode}
                 {...register('voucherCode')}
             />
 
-            <Button title={'Aplicar'} />
+            <Button title="Aplicar" />
 
-            {coupon && (
-                <S.ListCoupons>
-                    <S.ItemCoupon>
-                        <span>
-                            {coupon.voucherCode} -{' '}
-                            {formatCurrency(coupon.amount)}
-                        </span>
+            {coupons.length > 0 &&
+                coupons.map((coupon) => (
+                    <S.ListCoupons>
+                        <S.ItemCoupon>
+                            <span>
+                                {coupon.voucherCode} -{' '}
+                                {formatCurrency(coupon.amount)}
+                            </span>
 
-                        <S.Badge color={'new'}>{coupon.getStatus()}</S.Badge>
-                    </S.ItemCoupon>
-                </S.ListCoupons>
-            )}
+                            <S.ActionCoupon>
+                                <div style={{ marginTop: -20, marginRight: 8 }}>
+                                    <Button
+                                        title="Remover"
+                                        color="link"
+                                        onClick={() => removeCoupon(coupon.id)}
+                                    />
+                                </div>
+
+                                <S.Badge color="new">
+                                    {coupon.getStatus()}
+                                </S.Badge>
+                            </S.ActionCoupon>
+                        </S.ItemCoupon>
+                    </S.ListCoupons>
+                ))}
         </S.Container>
     )
 }

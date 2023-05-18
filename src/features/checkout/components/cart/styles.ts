@@ -63,6 +63,10 @@ export const TicketRow = styled('div', {
     paddingBottom: '$10',
     borderTop: '1px solid $opac2',
 
+    '.couponPrice': {
+        fontSize: '$4',
+    },
+
     '.shippingFeePrice': {
         fontSize: '$6',
     },

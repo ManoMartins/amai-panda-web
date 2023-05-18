@@ -18,8 +18,8 @@ async function createCreditCard(input: InputCreateCreditCard) {
 
 export function useCreateCreditCard() {
     return useMutation(createCreditCard, {
-        onSuccess() {
-            queryClient.invalidateQueries(['credit-cards'])
+        async onSuccess() {
+            await queryClient.invalidateQueries(['credit-cards'])
         },
     })
 }

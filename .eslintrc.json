@@ -24,6 +24,9 @@
     "cypress"
   ],
   "rules": {
+    "no-undef": "off",
+    "no-unused-vars": "off",
+    "react/require-default-props": "off",
     "cypress/no-assigning-return-values": "error",
     "cypress/no-unnecessary-waiting": "error",
     "cypress/assertion-before-screenshot": "warn",

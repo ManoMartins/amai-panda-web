@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Modal } from '@/components/modal'
@@ -11,17 +11,21 @@ import { ApplyCoupon } from '@/features/coupon/components/apply-coupon'
 import {
     useCheckoutActions,
     useCheckoutFormatters,
+    useCoupons,
     useOrderItem,
 } from '@/features/checkout/stores/checkout'
 
 import * as S from './styles'
 import { useModal } from '@/components/modal/useModal'
+import { useIsLogged } from '@/features/auth/stores/auth'
 
 export function Cart() {
     const router = useRouter()
+    const isLogged = useIsLogged()
 
     const { isOpen, onOpen, onClose } = useModal()
 
+    const coupons = useCoupons()
     const orderItems = useOrderItem()
     const { updateOrderItem } = useCheckoutActions()
     const { totalPriceInCents, shippingFeePrice } = useCheckoutFormatters()
@@ -48,8 +52,20 @@ export function Cart() {
     )
 
     const handleSubmit = useCallback(() => {
-        router.push('/checkout/address')
-    }, [router])
+        if (isLogged) {
+            router.push('/checkout/address')
+        } else {
+            router.push('/sign-in?redirectTo=/checkout/address')
+        }
+    }, [router, isLogged])
+
+    const couponAmount = useMemo(() => {
+        return coupons.reduce((acc, cur) => acc + cur.amount, 0)
+    }, [coupons])
+
+    const totalPrice = useMemo(() => {
+        return totalPriceInCents + shippingFeePrice - couponAmount
+    }, [totalPriceInCents, shippingFeePrice, couponAmount])
 
     return (
         <S.Container>
@@ -108,7 +124,7 @@ export function Cart() {
                     <S.Row>
                         <S.ShippingFee>Frete</S.ShippingFee>
                         <S.TicketRowPrice>
-                            <span className={'shippingFeePrice'}>
+                            <span className="shippingFeePrice">
                                 {formatCurrency(shippingFeePrice)}
                             </span>
                         </S.TicketRowPrice>
@@ -116,12 +132,18 @@ export function Cart() {
 
                     <S.Row>
                         <Button
-                            title={'Inserir código do cupom'}
-                            color={'link'}
+                            title="Inserir código do cupom"
+                            color="link"
                             onClick={onOpen}
                         />
 
-                        <S.TicketRowPrice />
+                        <S.TicketRowPrice>
+                            {coupons.length > 0 && (
+                                <span className="couponPrice">
+                                    {formatCurrency(couponAmount)}
+                                </span>
+                            )}
+                        </S.TicketRowPrice>
                     </S.Row>
                 </S.TicketRow>
 
@@ -130,15 +152,15 @@ export function Cart() {
                         <S.Total>Total com frete</S.Total>
                         <S.TicketRowPrice>
                             <span>
-                                {formatCurrency(
-                                    totalPriceInCents + shippingFeePrice
-                                )}
+                                {totalPrice < 0
+                                    ? formatCurrency(0)
+                                    : formatCurrency(totalPrice)}
                             </span>
                         </S.TicketRowPrice>
                     </S.Row>
                 </S.TicketRow>
 
-                <Button title={'Continuar a compra'} onClick={handleSubmit} />
+                <Button title="Continuar a compra" onClick={handleSubmit} />
             </S.Footer>
         </S.Container>
     )

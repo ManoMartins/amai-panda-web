@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/button'
 import { Checkbox, Text } from '@/components/form'
 
@@ -23,6 +23,7 @@ interface InputForm {
 
 export function CreateAddress() {
     const router = useRouter()
+    const params = useSearchParams()
 
     const {
         register,
@@ -38,7 +39,14 @@ export function CreateAddress() {
         async (input: InputForm) => {
             try {
                 await createAddress.mutateAsync(input)
-                router.back()
+
+                const redirectTo = params.get('redirectTo')
+
+                if (redirectTo) {
+                    router.push(redirectTo)
+                } else {
+                    router.back()
+                }
             } catch (err) {
                 console.log(err)
             }

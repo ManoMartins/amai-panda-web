@@ -29,8 +29,9 @@ export function Modal({ children, onRequestClose, ...rest }: Props) {
         >
             <S.Container>
                 <Button
-                    title={'x'}
-                    color={'secondary'}
+                    data-test="close-modal"
+                    title="x"
+                    color="secondary"
                     onClick={onRequestClose}
                 />
             </S.Container>

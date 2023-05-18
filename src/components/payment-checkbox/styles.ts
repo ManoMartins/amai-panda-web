@@ -22,13 +22,15 @@ export const PaymentValueContainer = styled('div', {
     display: 'flex',
     alignItems: 'center',
     border: '1px solid black',
-    fontSize: '$3m',
+    fontSize: '$3',
     paddingLeft: '$1',
-    borderRadius: '0.1rem',
-
+    borderRadius: '0.25rem',
+    borderColor: '$opac3',
     marginLeft: 'auto',
     width: '80px',
     height: '$7',
+    color: '$grey7',
+    fontWeight: '500',
 
     input: {
         width: '100%',
@@ -36,6 +38,7 @@ export const PaymentValueContainer = styled('div', {
         outline: 'none',
         paddingLeft: '$2',
         marginRight: '0',
+        color: '$grey7',
         background: 'transparent',
     },
 })

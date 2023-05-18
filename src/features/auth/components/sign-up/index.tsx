@@ -40,7 +40,7 @@ export function SignUp() {
         async (input: InputForm) => {
             try {
                 await signUp.mutateAsync(input)
-                router.back()
+                router.push('sign-in')
             } catch (e) {
                 console.log(e)
             }

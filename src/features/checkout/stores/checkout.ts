@@ -12,7 +12,8 @@ interface Checkout {
         product: ProductModel
         quantity: number
     }>
-    voucherCode?: CouponModel
+    // coupon?: CouponModel
+    coupons: CouponModel[]
 
     formatters: () => {
         amountProducts: number
@@ -22,8 +23,8 @@ interface Checkout {
     }
 
     actions: {
-        addVoucherCode: (voucherCode: CouponModel) => void
-        removeVoucherCode: () => void
+        addCoupon: (coupon: CouponModel) => void
+        removeCoupon: (couponId: string) => void
         addAddress: (addressId: string) => void
         addPayment: (paymentId: string, totalInCents: number) => void
         removePayment: (paymentId: string) => void
@@ -31,15 +32,17 @@ interface Checkout {
         addOrderItem: (product: ProductModel, quantity: number) => void
         removeOrderItem: (productId: string) => void
         updateOrderItem: (productId: string, quantity: number) => void
+        reset: () => void
     }
 }
 
 const useCheckoutStore = create<Checkout>((set, get) => {
     return {
         addressId: undefined,
-        voucherCode: undefined,
+        voucherCodes: undefined,
         payments: [],
         orderItems: [],
+        coupons: [],
 
         formatters: () => ({
             shippingFeePrice: 500,
@@ -58,14 +61,20 @@ const useCheckoutStore = create<Checkout>((set, get) => {
         }),
 
         actions: {
-            addVoucherCode: (voucherCode) => {
-                set(() => {
-                    return { voucherCode }
+            addCoupon: (coupon) => {
+                set((state) => {
+                    return {
+                        coupons: [...state.coupons, coupon],
+                    }
                 })
             },
-            removeVoucherCode: () => {
-                set(() => {
-                    return { voucherCode: undefined }
+            removeCoupon: (couponId) => {
+                set((state) => {
+                    return {
+                        coupons: state.coupons.filter(
+                            (coupon) => coupon.id !== couponId
+                        ),
+                    }
                 })
             },
             addAddress: (addressId) => {
@@ -176,11 +185,21 @@ const useCheckoutStore = create<Checkout>((set, get) => {
                     }
                 })
             },
+            reset: () => {
+                set(() => {
+                    return {
+                        addressId: undefined,
+                        coupons: [],
+                        payments: [],
+                        orderItems: [],
+                    }
+                })
+            },
         },
     }
 })
 
-const useCoupons = () => useCheckoutStore((state) => state.voucherCode)
+const useCoupons = () => useCheckoutStore((state) => state.coupons)
 
 const useAddress = () => useCheckoutStore((state) => state.addressId)
 

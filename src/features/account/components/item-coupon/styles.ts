@@ -7,6 +7,10 @@ export const Container = styled('div', {
 })
 
 export const Content = styled('div', {
+    '> * + *': {
+        marginTop: '16px',
+    },
+
     '> h1': {
         fontSize: '$4m',
         fontWeight: 500,

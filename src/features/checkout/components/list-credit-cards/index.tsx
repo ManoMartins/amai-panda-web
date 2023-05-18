@@ -1,5 +1,6 @@
 import { ChangeEvent, useCallback } from 'react'
 
+import { useRouter } from 'next/navigation'
 import { parseReal2Cent } from '@/utils/parse-real-2-cent'
 
 import { PaymentCheckbox } from '@/components/payment-checkbox'
@@ -12,6 +13,7 @@ import {
 import { useListCreditCard } from '@/features/credit-card/queries/use-list-credit-card'
 
 export function ListCreditCards() {
+    const router = useRouter()
     const listCreditCard = useListCreditCard()
 
     const payments = usePayment()
@@ -35,16 +37,28 @@ export function ListCreditCards() {
 
     const handlePaymentChange = useCallback(
         (paymentId: string, event: ChangeEvent<HTMLInputElement>) => {
+            const value = +event.target.value
+
+            if (payments.length > 1 && value < 10 && value !== 0) {
+                alert('O valor deve ser no mínimo R$ 10,00 por cartão.')
+                return
+            }
+
             updatePayment(paymentId, parseReal2Cent(+event.target.value))
         },
-        [updatePayment]
+        [payments, updatePayment]
     )
 
     return (
         <RadioButtonGroup
-            title={'Meus cartões'}
-            name={'payments'}
+            title="Meus cartões"
+            name="payments"
             onChange={handleChange}
+            onAdd={() =>
+                router.push(
+                    '/account/credit-card/create?redirectTo=/checkout/credit-card'
+                )
+            }
         >
             {listCreditCard.data?.map((creditCard) => (
                 <PaymentCheckbox

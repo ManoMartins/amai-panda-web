@@ -11,7 +11,9 @@ import { ListCreditCards } from '@/features/checkout/components/list-credit-card
 import * as S from '@/styles/checkout.style'
 import {
     useAddress,
+    useCheckoutActions,
     useCheckoutFormatters,
+    useCoupons,
     useOrderItem,
     usePayment,
 } from '@/features/checkout/stores/checkout'
@@ -22,9 +24,11 @@ export default function CreditCardPage() {
 
     const { mutateAsync } = useCreateOrder()
 
+    const { reset } = useCheckoutActions()
     const payments = usePayment()
     const addressId = useAddress()
     const orderItems = useOrderItem()
+    const coupons = useCoupons()
 
     const { shippingFeePrice, totalPriceInCents, totalPaymentPriceInCents } =
         useCheckoutFormatters()
@@ -41,10 +45,14 @@ export default function CreditCardPage() {
                 totalInCents: payment.totalInCents,
             }))
 
-            if (
-                totalPriceInCents + shippingFeePrice !==
-                totalPaymentPriceInCents
-            ) {
+            const couponAmount = coupons.reduce(
+                (acc, cur) => acc + cur.amount,
+                0
+            )
+
+            const total = totalPriceInCents + shippingFeePrice - couponAmount
+
+            if (total > 0 && total !== totalPaymentPriceInCents) {
                 alert('O valor de pagamento está diferento do valor total.')
                 return
             }
@@ -54,18 +62,35 @@ export default function CreditCardPage() {
                 return
             }
 
-            await mutateAsync({
+            const result = await mutateAsync({
                 addressId,
                 payments: paymentsFormatted,
                 orderItems: orderItemsFormatted,
+                voucherCodes: coupons.map((coupon) => coupon.voucherCode),
             })
 
-            router.push('/checkout/success')
-        } catch (e) {
-            console.log(e)
+            const query = `couponMoneyExchange=${result.data?.couponMoneyExchange?.voucherCode}`
+
+            router.push(
+                `/checkout/success${
+                    result.data?.couponMoneyExchange?.voucherCode
+                        ? `?${query}`
+                        : ''
+                }`
+            )
+            reset()
+        } catch (e: any) {
+            let errorMessage = e.message
+
+            if (e.response?.data?.errorMessage) {
+                errorMessage = e.response.data.errorMessage
+            }
+
+            alert(errorMessage)
         }
     }, [
         router,
+        coupons,
         payments,
         addressId,
         orderItems,
@@ -81,7 +106,7 @@ export default function CreditCardPage() {
                 <ListCreditCards />
 
                 <S.CartFooter>
-                    <Button title={'Finalizar'} onClick={handleSubmit} />
+                    <Button title="Finalizar" onClick={handleSubmit} />
                 </S.CartFooter>
             </S.CartContent>
 

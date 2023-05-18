@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import dynamic from 'next/dynamic'
@@ -34,6 +34,7 @@ export function SignIn() {
     } = useForm<InputForm>({
         resolver: zodResolver(schema),
     })
+    const params = useSearchParams()
     const router = useRouter()
     const signIn = useSignIn()
     const { login } = useAuthActions()
@@ -52,12 +53,18 @@ export function SignIn() {
                     token: response.data.token,
                 })
 
-                router.push('/')
+                const redirectTo = params.get('redirectTo')
+
+                if (redirectTo) {
+                    router.push(redirectTo)
+                } else {
+                    router.push('/')
+                }
             } catch (e) {
                 console.log(e)
             }
         },
-        [login, signIn, router]
+        [login, signIn, router, params]
     )
 
     return (

@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Text } from '@/components/form'
 import { Button } from '@/components/button'
 
@@ -18,6 +18,7 @@ interface InputForm {
 
 export function CreateCreditCard() {
     const router = useRouter()
+    const params = useSearchParams()
 
     const {
         register,
@@ -34,7 +35,14 @@ export function CreateCreditCard() {
                     ...input,
                     cardBrand: 'VISA',
                 })
-                router.back()
+
+                const redirectTo = params.get('redirectTo')
+
+                if (redirectTo) {
+                    router.push(redirectTo)
+                } else {
+                    router.back()
+                }
             } catch (e) {
                 console.log(e)
             }

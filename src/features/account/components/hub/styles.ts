@@ -70,3 +70,22 @@ export const Detail = styled('div', {
         color: '$grey7',
     },
 })
+
+export const Logout = styled('button', {
+    flex: 1,
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    background: '$white1',
+    border: 'none',
+    padding: '$5 $8 $5',
+    borderTop: '1px solid $grey14',
+    color: '$error',
+    fontSize: '$4',
+    fontWeight: '500',
+
+    '&:hover': {
+        filter: 'brightness(0.98)',
+        cursor: 'pointer',
+    },
+})

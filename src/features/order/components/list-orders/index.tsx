@@ -8,6 +8,17 @@ import { useModal } from '@/components/modal/useModal'
 import { Modal } from '@/components/modal'
 import { RequestExchangeOrders } from '@/features/order/components/request-exchange-orders'
 
+const statusTranslate = {
+    WAITING_PAYMENT: 'Aguardando pagamento',
+    PREPARING: 'Preparando',
+    IN_TRANSIT: 'Em trânsito',
+    DELIVERED: 'Entregue',
+    EXCHANGE_REQUEST: 'Troca solicitada',
+    EXCHANGE_RECEIVED: 'Troca realizada',
+    ACCEPT_EXCHANGE_REQUEST: 'Troca aceita',
+    DENY_EXCHANGE_REQUEST: 'Troca negada',
+}
+
 export function ListOrders() {
     const { isOpen, onOpen, onClose } = useModal()
     const { data } = useFindAllOrder()
@@ -34,12 +45,18 @@ export function ListOrders() {
                             <span>
                                 {dayjs(order.createdAt).format('DD/MM/YYYY')}
                             </span>
-                            <S.Status>{order.status}</S.Status>
+                            <S.Status>
+                                {
+                                    statusTranslate[
+                                        order.status || 'WAITING_PAYMENT'
+                                    ]
+                                }
+                            </S.Status>
                         </S.Header>
 
                         <div>
                             <div>
-                                {order.orderItems.map((orderItem) => (
+                                {order?.orderItems?.map((orderItem) => (
                                     <S.Detail key={orderItem.id}>
                                         <p>imagem</p>
 

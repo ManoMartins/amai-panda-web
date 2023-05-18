@@ -2,6 +2,7 @@ import { styled } from 'stitches.config'
 
 export const Container = styled('form', {
     margin: '0 auto',
+    width: '760px',
     maxWidth: '760px',
 
     py: '$6',
@@ -57,4 +58,9 @@ export const Badge = styled('span', {
             },
         },
     },
+})
+
+export const ActionCoupon = styled('div', {
+    display: 'flex',
+    alignItems: 'center',
 })

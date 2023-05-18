@@ -12,10 +12,17 @@ interface InputOrder {
         productId: string
         quantity: number
     }>
+    voucherCodes?: string[]
 }
 
 async function createOrder(input: InputOrder) {
-    await api.post('/orders', input)
+    const response = await api.post<{
+        data: {
+            couponMoneyExchange?: any
+        }
+    }>('/orders', input)
+
+    return response.data
 }
 
 export function useCreateOrder() {

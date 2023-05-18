@@ -36,6 +36,7 @@
     "@types/react-modal": "^3.13.1",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
+    "clipboardy": "^3.0.0",
     "cypress": "^12.6.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.6.0",

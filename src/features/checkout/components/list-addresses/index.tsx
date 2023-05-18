@@ -1,13 +1,15 @@
+import { ChangeEvent, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { RadioButton } from '@/components/radio-button'
 import { RadioButtonGroup } from '@/components/radio-button-group'
 import { useListAddress } from '@/features/address/queries/use-list-address'
-import { ChangeEvent, useCallback } from 'react'
 import {
     useAddress,
     useCheckoutActions,
 } from '@/features/checkout/stores/checkout'
 
 export function ListAddresses() {
+    const router = useRouter()
     const listAddresses = useListAddress()
 
     const addressId = useAddress()
@@ -22,10 +24,15 @@ export function ListAddresses() {
 
     return (
         <RadioButtonGroup
-            title={'Meus endereços'}
-            name={'addressId'}
+            title="Meus endereços"
+            name="addressId"
             defaultValue={addressId}
             onChange={handleChange}
+            onAdd={() =>
+                router.push(
+                    '/account/address/create?redirectTo=/checkout/address'
+                )
+            }
         >
             {listAddresses.data?.map((address) => (
                 <RadioButton

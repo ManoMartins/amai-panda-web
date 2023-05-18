@@ -23,7 +23,10 @@ describe("checkout", () => {
         .replace(",", ".")
         .trim();
 
-      cy.get("[data-test='input-payment-value']").type(totalPrice).blur();
+      cy.get("[data-test='input-payment-value']")
+        .first()
+        .type(totalPrice)
+        .blur();
       cy.contains("Finalizar").click();
 
       cy.url().should("contain", "/checkout/success");

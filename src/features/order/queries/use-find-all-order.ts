@@ -2,6 +2,7 @@ import { useQuery } from 'react-query'
 import api from '@/services/api'
 import { ApiResponse } from '@/@types/api-response'
 import { Status } from '@/@types/order/status.d'
+import { OrderModel } from '@/models/order.model'
 
 interface OutputFindAllOrder {
     id: string
